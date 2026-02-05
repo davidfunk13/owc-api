@@ -18,7 +18,10 @@ class AuthController extends Controller
         // Store state -> platform mapping in cache (expires in 10 minutes)
         Cache::put("oauth_state:{$state}", $platform, now()->addMinutes(10));
 
-        return Socialite::driver('battlenet')
+        /** @var \Laravel\Socialite\Two\AbstractProvider $driver */
+        $driver = Socialite::driver('battlenet');
+
+        return $driver
             ->scopes(['openid'])
             ->with(['state' => $state])
             ->redirect();
@@ -28,19 +31,23 @@ class AuthController extends Controller
     {
         $state = $request->query('state');
 
-        if (!$state) {
+        if (! $state) {
             return $this->redirectWithError('web', 'missing_state');
         }
 
         // Pull removes the key after retrieving (single-use)
         $platform = Cache::pull("oauth_state:{$state}");
 
-        if (!$platform) {
+        if (! $platform) {
             return $this->redirectWithError('web', 'invalid_state');
         }
 
         try {
-            $battlenetUser = Socialite::driver('battlenet')->stateless()->user();
+            /** @var \Laravel\Socialite\Two\AbstractProvider $driver */
+            $driver = Socialite::driver('battlenet');
+
+            /** @var \Laravel\Socialite\Two\User $battlenetUser */
+            $battlenetUser = $driver->stateless()->user();
 
             $raw = $battlenetUser->getRaw();
 
@@ -58,7 +65,7 @@ class AuthController extends Controller
                 ? config('services.auth.redirect_web')
                 : config('services.auth.redirect_mobile');
 
-            return redirect($redirectUrl . '?token=' . $token);
+            return redirect($redirectUrl.'?token='.$token);
 
         } catch (\Exception $e) {
             \Log::error('OAuth callback failed', [
@@ -80,7 +87,7 @@ class AuthController extends Controller
             ? config('services.auth.redirect_web')
             : config('services.auth.redirect_mobile');
 
-        return redirect($redirectUrl . '?error=' . $error);
+        return redirect($redirectUrl.'?error='.$error);
     }
 
     public function user(Request $request)

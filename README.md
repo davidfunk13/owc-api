@@ -1,59 +1,276 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# OWC API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+REST API backend for the OWC Stats Tracker application. Built with Laravel and provides Battle.net OAuth authentication.
 
-## About Laravel
+## Tech Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **PHP** 8.2+
+- **Laravel** 12
+- **Laravel Sanctum** for API token authentication
+- **PostgreSQL** database
+- **Redis** for caching
+- **Socialite** with Battle.net provider for OAuth
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Prerequisites
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.2+
+- Composer
+- PostgreSQL
+- Redis
+- Battle.net Developer Application credentials
 
-## Learning Laravel
+## Getting Started
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 1. Install Dependencies
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+composer install
+```
 
-## Laravel Sponsors
+### 2. Configure Environment
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Copy the example environment file:
 
-### Premium Partners
+```bash
+cp .env.example .env
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Edit `.env` with your configuration:
 
-## Contributing
+```bash
+# Application
+APP_NAME="OWC API"
+APP_URL=http://localhost:8000
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Database (PostgreSQL)
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=owc
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
 
-## Code of Conduct
+# Battle.net OAuth (from developer.battle.net)
+BATTLENET_CLIENT_ID=your_client_id
+BATTLENET_CLIENT_SECRET=your_client_secret
+BATTLENET_REDIRECT_URI=http://localhost:8000/auth/battlenet/callback
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Post-auth redirects for each platform
+AUTH_REDIRECT_MOBILE=owc://auth/callback
+AUTH_REDIRECT_WEB=http://localhost:8081/auth/callback
 
-## Security Vulnerabilities
+# Redis
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 3. Generate Application Key
+
+```bash
+php artisan key:generate
+```
+
+### 4. Run Database Migrations
+
+```bash
+php artisan migrate
+```
+
+### 5. Start Development Server
+
+```bash
+# Standard (localhost only)
+composer dev
+
+# For real device testing (accessible from network)
+composer dev:device
+```
+
+## Quick Setup
+
+Run all setup steps at once:
+
+```bash
+composer setup
+```
+
+This runs: `composer install`, generates `.env`, `key:generate`, and `migrate`.
+
+## Running on a Real Device
+
+When testing with a physical phone, the API must be accessible from your local network.
+
+### 1. Find Your Local IP
+
+```bash
+# macOS
+ipconfig getifaddr en0
+
+# Linux
+hostname -I | awk '{print $1}'
+```
+
+### 2. Update Environment
+
+```bash
+APP_URL=http://192.168.0.132:8000
+BATTLENET_REDIRECT_URI=http://192.168.0.132:8000/auth/battlenet/callback
+```
+
+### 3. Start Server on All Interfaces
+
+```bash
+composer dev:device
+```
+
+This binds to `0.0.0.0` instead of `127.0.0.1`, making the API accessible from other devices on your network.
+
+### 4. Update Battle.net App Settings
+
+In the [Battle.net Developer Portal](https://develop.battle.net/), add your local IP to the allowed redirect URIs:
+
+```
+http://192.168.0.132:8000/auth/battlenet/callback
+```
+
+## API Endpoints
+
+### Public Routes
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Health check |
+| GET | `/auth/battlenet/redirect` | Start OAuth flow |
+| GET | `/auth/battlenet/callback` | OAuth callback (internal) |
+
+### Protected Routes (requires `Authorization: Bearer {token}`)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/auth/user` | Get authenticated user |
+| POST | `/api/auth/logout` | Logout and revoke token |
+
+### OAuth Flow
+
+Start authentication by redirecting to:
+
+```
+GET /auth/battlenet/redirect?platform=mobile
+```
+
+Query parameters:
+- `platform`: `web` or `mobile` - determines post-auth redirect
+
+## Database Schema
+
+### Users Table
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | bigint | Primary key |
+| sub | string | OAuth subject ID (unique) |
+| battlenet_id | bigint | Battle.net account ID (unique) |
+| battletag | string | Player's BattleTag |
+| created_at | timestamp | Account creation time |
+| updated_at | timestamp | Last update time |
+
+### Personal Access Tokens (Sanctum)
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | bigint | Primary key |
+| tokenable_type | string | Model type (User) |
+| tokenable_id | bigint | User ID |
+| name | string | Token name |
+| token | string | Hashed token value |
+| abilities | text | Token scopes |
+| expires_at | timestamp | Token expiration |
+
+## Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `composer setup` | Full setup (install, key, migrate) |
+| `composer dev` | Start dev server on localhost |
+| `composer dev:device` | Start dev server on all interfaces |
+| `composer test` | Run PHPUnit tests |
+| `./vendor/bin/pint` | Format code with Laravel Pint |
+
+## Project Structure
+
+```
+owc-api/
+├── app/
+│   ├── Http/Controllers/
+│   │   └── AuthController.php    # OAuth and auth logic
+│   ├── Models/
+│   │   └── User.php              # User model
+│   └── Providers/
+│       └── AppServiceProvider.php
+├── config/
+│   ├── services.php              # OAuth credentials
+│   └── sanctum.php               # API token settings
+├── database/
+│   └── migrations/               # Database schema
+├── routes/
+│   ├── api.php                   # API routes
+│   └── web.php                   # Web routes (OAuth)
+└── tests/
+    ├── Feature/
+    └── Unit/
+```
+
+## Authentication Flow
+
+1. Client requests `/auth/battlenet/redirect?platform=mobile`
+2. API generates state token, caches it, redirects to Battle.net
+3. User authenticates on Battle.net
+4. Battle.net redirects to `/auth/battlenet/callback`
+5. API validates state, exchanges code for user info
+6. User created/updated in database
+7. Sanctum token generated
+8. Redirect to client with token: `owc://auth/callback?token=...`
+
+## Battle.net Developer Setup
+
+1. Go to [Battle.net Developer Portal](https://develop.battle.net/)
+2. Create a new application
+3. Set the redirect URI to your callback URL
+4. Copy Client ID and Client Secret to `.env`
+
+Required OAuth scopes:
+- `openid` - For user identity
+
+## Testing
+
+```bash
+# Run all tests
+composer test
+
+# Run specific test file
+./vendor/bin/phpunit tests/Feature/AuthTest.php
+```
+
+## Code Formatting
+
+```bash
+./vendor/bin/pint
+```
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `APP_URL` | Base URL of the API |
+| `DB_*` | PostgreSQL connection settings |
+| `BATTLENET_CLIENT_ID` | Battle.net app client ID |
+| `BATTLENET_CLIENT_SECRET` | Battle.net app client secret |
+| `BATTLENET_REDIRECT_URI` | OAuth callback URL |
+| `AUTH_REDIRECT_MOBILE` | Post-auth redirect for mobile |
+| `AUTH_REDIRECT_WEB` | Post-auth redirect for web |
+| `REDIS_HOST` | Redis server host |
+| `REDIS_PORT` | Redis server port |
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Private - All rights reserved

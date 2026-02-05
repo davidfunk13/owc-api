@@ -20,7 +20,7 @@ class UserFactory extends Factory
         return [
             'sub' => fake()->unique()->uuid(),
             'battlenet_id' => fake()->unique()->numberBetween(100000000, 999999999),
-            'battletag' => fake()->userName() . '#' . fake()->numberBetween(1000, 9999),
+            'battletag' => fake()->userName().'#'.fake()->numberBetween(1000, 9999),
             'remember_token' => Str::random(10),
         ];
     }

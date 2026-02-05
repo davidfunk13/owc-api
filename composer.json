@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "owc/api",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "REST API backend for OWC Stats Tracker - Battle.net OAuth and Overwatch statistics",
+    "keywords": ["overwatch", "stats", "api", "battlenet", "oauth"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
@@ -42,16 +42,18 @@
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "@php artisan serve"
-        ],
-        "dev:device": [
-            "Composer\\Config::disableProcessTimeout",
             "@php artisan serve --host=0.0.0.0"
         ],
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
         ],
+        "test:coverage": [
+            "@php artisan config:clear --ansi",
+            "@php artisan test --coverage"
+        ],
+        "lint": "./vendor/bin/pint",
+        "lint:check": "./vendor/bin/pint --test",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
