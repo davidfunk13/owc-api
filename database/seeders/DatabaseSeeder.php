@@ -11,6 +11,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Users are created via Battle.net OAuth
+        $this->call([
+            HeroSeeder::class,
+            MapSeeder::class,
+            MapSubmapSeeder::class,
+        ]);
     }
 }
