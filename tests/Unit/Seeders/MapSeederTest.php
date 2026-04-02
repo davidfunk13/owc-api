@@ -16,7 +16,7 @@ class MapSeederTest extends TestCase
     {
         $this->seed(MapSeeder::class);
 
-        $this->assertEquals(31, Map::count());
+        $this->assertEquals(29, Map::count());
     }
 
     public function test_map_seeder_is_idempotent(): void
@@ -24,7 +24,7 @@ class MapSeederTest extends TestCase
         $this->seed(MapSeeder::class);
         $this->seed(MapSeeder::class);
 
-        $this->assertEquals(31, Map::count());
+        $this->assertEquals(29, Map::count());
     }
 
     public function test_map_seeder_assigns_correct_types(): void

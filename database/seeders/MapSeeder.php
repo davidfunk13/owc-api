@@ -48,10 +48,6 @@ class MapSeeder extends Seeder
             ['name' => 'New Junk City', 'slug' => 'new-junk-city', 'map_type' => 'flashpoint'],
             ['name' => 'Suravasa', 'slug' => 'suravasa', 'map_type' => 'flashpoint'],
             ['name' => 'Aatlis', 'slug' => 'aatlis', 'map_type' => 'flashpoint'],
-
-            // Clash
-            ['name' => 'Hanaoka', 'slug' => 'hanaoka', 'map_type' => 'clash'],
-            ['name' => 'Throne of Anubis', 'slug' => 'throne-of-anubis', 'map_type' => 'clash'],
         ];
 
         foreach ($maps as $map) {

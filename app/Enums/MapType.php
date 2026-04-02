@@ -9,7 +9,6 @@ enum MapType: string
     case Hybrid = 'hybrid';
     case Push = 'push';
     case Flashpoint = 'flashpoint';
-    case Clash = 'clash';
 
     public function label(): string
     {
@@ -19,7 +18,6 @@ enum MapType: string
             self::Hybrid => 'Hybrid',
             self::Push => 'Push',
             self::Flashpoint => 'Flashpoint',
-            self::Clash => 'Clash',
         };
     }
 

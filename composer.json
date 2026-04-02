@@ -57,7 +57,8 @@
         "lint:check": "./vendor/bin/pint --test",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php -r \"if (is_dir('vendor/nunomaduro/collision/.temp')) chmod('vendor/nunomaduro/collision/.temp', 0777);\""
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
